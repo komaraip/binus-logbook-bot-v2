@@ -13,6 +13,23 @@ An automated bot that streamlines the process of submitting monthly student inte
 - 🛡️ **Error Handling**: Robust error handling with detailed logging
 - 🔐 **2FA Support**: Compatible with Microsoft Authenticator two-factor authentication
 - 💾 **Session Persistence**: Remember login state for faster subsequent runs
+- 🌐 **Web Interface**: User-friendly web interface with real-time progress updates
+- 📱 **Multiple Modes**: Run via CLI or web interface
+
+## 🎯 Two Ways to Use
+
+This bot offers **two modes of operation**:
+
+1. **🖥️ CLI Mode (Command Line)**: Run directly from terminal - perfect for quick one-time executions
+   ```bash
+   npm start
+   ```
+
+2. **🌐 Web Interface**: User-friendly web UI with real-time progress - ideal for regular use
+   ```bash
+   npm run web
+   ```
+   Then open your browser to `http://localhost:3000`
 
 ## 🚀 Quick Start
 
@@ -63,8 +80,9 @@ EMAIL=your.email@binus.ac.id
 PASSWORD=your_password
 
 # Browser configuration (optional)
-# Uses Brave by default if installed, otherwise uses Playwright's Chromium
-# Set custom path if Brave is installed in a different location
+# In development: Uses Brave if installed at default location and BRAVE_PATH is set
+# In production: Always uses Playwright's Chromium in headless mode
+# Set custom path if Brave is installed in a different location (development only)
 BRAVE_PATH=C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe
 
 # Clock in and out times (12-hour format: HH:MM am or pm)
@@ -111,6 +129,8 @@ Navigate to the `src/data/` folder and modify the `monthly_activity.xlsx` file:
 
 #### 5. Run the Bot
 
+**Option A: CLI Mode** (Quick terminal-based execution)
+
 Start the bot by running:
 
 ```bash
@@ -123,6 +143,21 @@ The bot will:
 3. 📊 Read your Excel data
 4. 📝 Fill out each day's activities automatically
 5. ✅ Submit all entries
+
+**Option B: Web Interface** (User-friendly with real-time updates)
+
+Start the web server:
+
+```bash
+npm run web
+```
+
+Then:
+1. 🌐 Open your browser and go to `http://localhost:3000`
+2. 📝 Fill in your credentials and settings in the web form
+3. 📤 Upload your Excel file (or use the default one)
+4. ▶️ Click "Start Bot" and watch real-time progress
+5. 📊 View live updates and completion status
 
 **For First-Time Users with 2FA:**
 
@@ -159,6 +194,56 @@ Then run the bot normally:
 npm start
 ```
 
+### 🌐 Using the Web Interface
+
+The web interface provides a more user-friendly experience with real-time updates:
+
+**Starting the Web Server:**
+
+```bash
+npm run web
+```
+
+For development with auto-reload:
+
+```bash
+npm run dev
+```
+
+**Features:**
+
+- 📝 **Easy Configuration**: Fill in credentials and settings through a form
+- 📤 **File Upload**: Upload your Excel file directly through the browser
+- 📥 **Download Template**: Download the Excel template with proper format
+- 📊 **Real-Time Progress**: See live updates as the bot processes each entry
+- 🔴 **Stop Control**: Stop the bot at any time
+- 🔄 **Session Management**: Clear saved sessions with one click
+- 📱 **Responsive Design**: Works on desktop and mobile devices
+
+**Using the Web Interface:**
+
+1. **Start the server** and navigate to `http://localhost:3000`
+2. **Configure settings:**
+   - Enter your BINUS email and password
+   - Set clock in/out times (e.g., "08:00 am" and "05:00 pm")
+   - Select logbook month and semester
+3. **Upload Excel file** (optional - it will use the default file if not uploaded)
+4. **Click "Start Bot"** and watch the progress in real-time
+5. **Monitor status** through the progress updates and logs
+6. **Bot will notify** when completed or if any errors occur
+
+**API Endpoints:**
+
+The web interface uses these endpoints (useful for custom integrations):
+
+- `POST /api/start` - Start the bot
+- `GET /api/status` - Get current bot status
+- `POST /api/stop` - Stop the running bot
+- `POST /api/upload` - Upload Excel file
+- `POST /api/clear-session` - Clear saved session
+- `GET /api/events` - Server-Sent Events for real-time updates
+- `GET /template/monthly_activity.xlsx` - Download Excel template
+
 ## 📁 Project Structure
 
 ```
@@ -173,10 +258,20 @@ logbook_bot/
 │   ├── data/           # Data files
 │   │   └── monthly_activity.xlsx  # Your activity data
 │   ├── types/          # TypeScript type definitions
-│   └── main.ts         # Application entry point
-├── specs/              # Documentation
+│   ├── utils/          # Utility functions
+│   │   └── mapping.ts  # Month/semester mapping
+│   ├── main.ts         # CLI entry point
+│   ├── server.ts       # Web server entry point
+│   └── clear-session.ts # Session clearing utility
+├── public/             # Web interface files
+│   ├── index.html      # Web UI
+│   ├── script.js       # Frontend JavaScript
+│   └── styles.css      # Styling
+├── data/
+│   └── session/        # Saved login sessions
 ├── package.json        # Project dependencies
-└── README.md          # This file
+├── tsconfig.json       # TypeScript configuration
+└── README.md           # This file
 ```
 
 ## 🔧 Configuration Options
@@ -185,9 +280,12 @@ logbook_bot/
 
 | Variable | Description | Example | Options |
 |----------|-------------|---------|---------|
+| `NODE_ENV` | Environment mode | `development` or `production` | `development` (visible browser), `production` (headless) |
+| `PORT` | Web server port (web mode only) | `3000` | Any valid port number |
+| `BASE_PATH` | Subfolder path (web mode only) | `/binuslogbookbot` | Any valid path |
 | `EMAIL` | Your BINUS email address | `john.doe@binus.ac.id` | - |
 | `PASSWORD` | Your BINUS password | `your_password` | - |
-| `BRAVE_PATH` | Path to Brave browser (optional) | `C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe` | Any valid browser path |
+| `BRAVE_PATH` | Path to Brave browser (optional, dev only) | `C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe` | Any valid browser path |
 | `CLOCK_IN_TIME` | Clock-in time (12-hour format) | `"08:00 am"` | Any valid time |
 | `CLOCK_OUT_TIME` | Clock-out time (12-hour format) | `"05:00 pm"` | Any valid time |
 | `LOGBOOK_MONTH` | Month for logbook entries | `SEP` | FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC, JAN |
@@ -424,15 +522,35 @@ npm run build
 
 #### 6. Run the Server
 
+**For CLI Mode:**
 ```bash
-# For testing
 npm start
+```
 
-# For production (recommended: use PM2 or similar)
+**For Web Interface (Recommended for production):**
+
+```bash
+# One-time execution
+npm run web
+
+# Or use PM2 for persistent running
 npm install -g pm2
-pm2 start npm --name "binus-logbook-bot" -- start
+pm2 start npm --name "binus-logbook-bot" -- run web
 pm2 save
 pm2 startup
+```
+
+**For production build:**
+
+```bash
+# Build TypeScript to JavaScript
+npm run build
+
+# Run the built server
+npm run start:prod
+
+# Or use PM2
+pm2 start dist/server.js --name "binus-logbook-bot"
 ```
 
 #### 7. Access Your Web Interface
@@ -480,6 +598,27 @@ PORT=3001
 - Upgrade your hosting plan
 - Close other applications
 - Use a VPS instead of shared hosting
+
+**Web interface not accessible:**
+```bash
+# Check if port is available
+netstat -an | findstr :3000  # Windows
+netstat -tuln | grep :3000  # Linux
+
+# Change port in .env if needed
+PORT=8080
+```
+
+## 📜 Available NPM Scripts
+
+| Script | Command | Description |
+|--------|---------|-------------|
+| `start` | `npm start` | Run bot in CLI mode |
+| `web` | `npm run web` | Start web interface server |
+| `dev` | `npm run dev` | Start web server with auto-reload (development) |
+| `build` | `npm run build` | Compile TypeScript to JavaScript |
+| `start:prod` | `npm run start:prod` | Run compiled web server (production) |
+| `clear-session` | `npm run clear-session` | Clear saved login session |
 
 ### Getting Help
 
