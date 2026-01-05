@@ -1,0 +1,37 @@
+{
+  "name": "logbook_bot",
+  "version": "1.0.0",
+  "description": "Logbook bot for BINUS automatic data filling",
+  "license": "ISC",
+  "author": "Aldo A.",
+  "type": "module",
+  "main": "src/main.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "start": "node --import tsx src/main.ts",
+    "start:prod": "node dist/server.js",
+    "clear-session": "node --import tsx src/clear-session.ts",
+    "web": "node --import tsx src/server.ts",
+    "dev": "nodemon --exec node --import tsx src/server.ts"
+  },
+  "dependencies": {
+    "@types/xlsx": "^0.0.35",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.21.2",
+    "multer": "^1.4.5-lts.1",
+    "playwright": "^1.56.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^4.17.23",
+    "@types/multer": "^1.4.13",
+    "@types/node": "^24.7.0",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

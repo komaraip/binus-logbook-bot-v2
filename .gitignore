@@ -1,0 +1,8 @@
+node_modules
+.env
+specs
+src/data/login-session.json
+src/data/session/
+data/session/
+*.png
+debug-*.png

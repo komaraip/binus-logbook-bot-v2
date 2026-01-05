@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BINUS Logbook Bot - Web Interface</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 BINUS Logbook Bot</h1>
+            <p class="subtitle">Automated logbook entry submission for BINUS Internship</p>
+        </header>
+
+        <main>
+            <!-- Configuration Section -->
+            <section class="card">
+                <h2>⚙️ Configuration</h2>
+                
+                <form id="botForm">
+                    <!-- Login Credentials -->
+                    <div class="form-section">
+                        <h3>🔐 Login Credentials</h3>
+                        <div class="form-group">
+                            <label for="email">Email:</label>
+                            <input type="email" id="email" name="email" placeholder="your.email@binus.ac.id" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password:</label>
+                            <input type="password" id="password" name="password" placeholder="Your password" required>
+                        </div>
+                    </div>
+
+                    <!-- Time Settings -->
+                    <div class="form-section">
+                        <h3>⏰ Time Settings</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="clockInTime">Clock In Time:</label>
+                                <input type="text" id="clockInTime" name="clockInTime" placeholder="08:00 am" value="08:00 am" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="clockOutTime">Clock Out Time:</label>
+                                <input type="text" id="clockOutTime" name="clockOutTime" placeholder="05:00 pm" value="05:00 pm" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Logbook Settings -->
+                    <div class="form-section">
+                        <h3>📅 Logbook Settings</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="logbookMonth">Month:</label>
+                                <select id="logbookMonth" name="logbookMonth" required>
+                                    <option value="JAN">January</option>
+                                    <option value="FEB">February</option>
+                                    <option value="MAR">March</option>
+                                    <option value="APR">April</option>
+                                    <option value="MAY">May</option>
+                                    <option value="JUN">June</option>
+                                    <option value="JUL">July</option>
+                                    <option value="AUG">August</option>
+                                    <option value="SEP" selected>September</option>
+                                    <option value="OCT">October</option>
+                                    <option value="NOV">November</option>
+                                    <option value="DEC">December</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="internshipSemester">Semester:</label>
+                                <select id="internshipSemester" name="internshipSemester" required>
+                                    <option value="EVEN">EVEN (2420)</option>
+                                    <option value="ODD" selected>ODD (2510)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Excel File Upload -->
+                    <div class="form-section">
+                        <h3>📊 Excel File</h3>
+                        <div class="form-group">
+                            <label for="excelFile">Upload Excel File:</label>
+                            <div class="file-upload">
+                                <input type="file" id="excelFile" name="excelFile" accept=".xlsx,.xls" required>
+                                <span class="file-upload-text">Choose file...</span>
+                            </div>
+                            <li>
+                                <small class="help-text">
+                                    File should contain: Activity (Column B) and Description (Column C).
+                                    If your file is not in the correct format, the bot will fail.
+                                </small>
+                            </li>
+                            <li>
+                                <small class="help-text">
+                                    You can download the template Excel file below, so the bot can process it correctly.
+                                </small>
+                            </li>
+                        </div>
+                        <button type="button" id="downloadBtn" class="btn btn-secondary">
+                            <a href="/template/monthly_activity.xlsx" download>Template</a>
+                        </button>
+                        <button type="button" id="uploadBtn" class="btn btn-secondary">Upload File</button>
+                        <span id="uploadStatus" class="status-text"></span>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="button-group">
+                        <button type="submit" id="startBtn" class="btn btn-primary">
+                            <span class="btn-icon">▶️</span> Start Bot
+                        </button>
+                        <button type="button" id="stopBtn" class="btn btn-danger" disabled>
+                            <span class="btn-icon">⏹️</span> Stop Bot
+                        </button>
+                        <button type="button" id="clearSessionBtn" class="btn btn-secondary">
+                            <span class="btn-icon">🔄</span> Clear Session
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Status Section -->
+            <section class="card">
+                <h2>📊 Status</h2>
+                <div id="statusContainer">
+                    <div class="status-item">
+                        <span class="status-label">Bot Status:</span>
+                        <span id="botStatus" class="status-badge status-idle">Idle</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Progress:</span>
+                        <span id="progressText">0 / 0</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="progressFill" class="progress-fill"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Log Section -->
+            <section class="card">
+                <h2>📝 Activity Log</h2>
+                <div id="logContainer" class="log-container">
+                    <p class="log-entry log-info">Ready to start. Configure settings and upload Excel file.</p>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="card" id="resultsSection" style="display: none;">
+                <h2>✅ Results</h2>
+                <div id="resultsContainer">
+                    <div class="result-item">
+                        <span class="result-label">Processed:</span>
+                        <span id="processedCount" class="result-value">0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Errors:</span>
+                        <span id="errorCount" class="result-value">0</span>
+                    </div>
+                    <div id="errorList" class="error-list"></div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Made with ❤️ for BINUS Students</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
